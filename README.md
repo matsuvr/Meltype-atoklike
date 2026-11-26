@@ -1,3 +1,6 @@
+> **Meltype-atoklike（個人用フォーク）**
+> ATOK 風のキー操作を既定とし、変更は matsuvr/Meltype-atoklike 内で管理します。詳細は [個人版の運用と互換範囲](docs/ATOKLIKE.md)。
+
 <p align="center">
   <img src="docs/images/logo.png" alt="Meltype" width="480"><br>
   <sub>Logo by <a href="https://github.com/Crysta1221">@Crysta1221</a></sub>
@@ -6,8 +9,8 @@
 <p align="center"><b>雪解けのように、半角/全角の壁を溶かす日本語入力。</b></p>
 
 <p align="center">
-  <a href="https://github.com/yksr-melt/Meltype/releases/latest"><img src="https://img.shields.io/github/v/release/yksr-melt/Meltype?color=5ec4f0" alt="release"></a>
-  <a href="https://github.com/yksr-melt/Meltype/releases"><img src="https://img.shields.io/github/downloads/yksr-melt/Meltype/total?color=ff8ab4" alt="downloads"></a>
+  <a href="https://github.com/matsuvr/Meltype-atoklike/releases/latest"><img src="https://img.shields.io/github/v/release/matsuvr/Meltype-atoklike?color=5ec4f0" alt="release"></a>
+  <a href="https://github.com/matsuvr/Meltype-atoklike/releases"><img src="https://img.shields.io/github/downloads/matsuvr/Meltype-atoklike/total?color=ff8ab4" alt="downloads"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-7a96f0" alt="license"></a>
   <a href="https://discord.gg/y44wBbBgHt"><img src="https://img.shields.io/badge/Discord-参加する-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
   <a href="https://github.com/sponsors/yksr-melt"><img src="https://img.shields.io/badge/Sponsor-応援する-ff8ab4?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
@@ -29,11 +32,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/yksr-melt/Meltype/releases/latest"><b>ダウンロード</b></a>
+  <a href="https://github.com/matsuvr/Meltype-atoklike/releases/latest"><b>ダウンロード</b></a>
   &nbsp;·&nbsp;
   <a href="docs/USAGE.md">使い方</a>
   &nbsp;·&nbsp;
-  <a href="https://github.com/yksr-melt/Meltype/issues/new/choose">不具合の報告・提案</a>
+  <a href="https://github.com/matsuvr/Meltype-atoklike/issues/new/choose">不具合の報告・提案</a>
   &nbsp;·&nbsp;
   <a href="https://discord.gg/y44wBbBgHt">Discord</a>
   &nbsp;·&nbsp;
@@ -85,7 +88,7 @@ VS Code やターミナルでは英数が基本で、コメントと文字列の
 
 <p align="center"><sub>カードを押すと、それぞれの OS の説明 (インストール・使い方・困ったとき) が開きます</sub></p>
 
-Windows は、[Releases](https://github.com/yksr-melt/Meltype/releases/latest) から `Meltype-<version>-setup.exe` をダウンロードして、案内どおりに進めるだけ！
+Windows は、[Releases](https://github.com/matsuvr/Meltype-atoklike/releases/latest) から `Meltype-<version>-setup.exe` をダウンロードして、案内どおりに進めるだけ！
 Windows のコード署名の方針は [Code signing policy](docs/CODE-SIGNING.md) にあります。
 あとは、いつもどおりローマ字で打つだけです。キー操作と機能は [docs/USAGE.md](docs/USAGE.md) にあります。
 
@@ -231,7 +234,7 @@ General Public License for more details.
 不具合の報告、辞書の追加、Pull Request、どれも大歓迎です！
 
 <p align="center">
-  <a href="https://github.com/yksr-melt/Meltype/issues/new/choose"><img src="docs/images/cards/contribute-issue.svg" alt="不具合の報告" width="32%"></a>
+  <a href="https://github.com/matsuvr/Meltype-atoklike/issues/new/choose"><img src="docs/images/cards/contribute-issue.svg" alt="不具合の報告" width="32%"></a>
   <a href="CONTRIBUTING.md#辞書の追加"><img src="docs/images/cards/contribute-dictionary.svg" alt="辞書の追加" width="32%"></a>
   <a href="CONTRIBUTING.md"><img src="docs/images/cards/contribute-code.svg" alt="コードで協力" width="32%"></a>
 </p>

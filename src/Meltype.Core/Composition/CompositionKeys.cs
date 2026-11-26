@@ -103,16 +103,32 @@ internal static class CompositionKeys
             var converting = withInput as CompositionScene.Converting;
             // 変換ボックスに入力中の Ctrl + キー (Ctrl+U/I/O/P はかな・英字の切り替え、Ctrl+H は BackSpace。それ以外は確定してから通す)。
             if (IsControl(vk)) return;
-            // 設定「Control キーの割り当て」が ATOK 風: Ctrl + K / L で文節の長さを変える。変換中だけ (Shift + ← → と同じ。issue #599)
-            if (converting is not null && env.Settings.ControlKeys == Config.ControlKeyLayout.Atok && vk is 'K' or 'L')
-            {
-                CompositionConversion.Resize(converting, env, vk == 'L' ? +1 : -1);
-                return;
-            }
-            // 設定「Control キーの割り当て」: 組み込みの割り当てより先に見る (issue #63・#209)
+            // 個別の割り当てを優先し、ATOK 標準では変換中の Ctrl+矢印を文節・候補の操作に使う。
             if (BoundControlKey(env, vk) is { } bound)
             {
                 vk = bound;
+            }
+            else if (env.Settings.ControlKeys == ControlKeyLayout.Atok && AtokControlShortcut(vk, converting is not null) is { } atok)
+            {
+                if (converting is not null && atok is ClauseFirst or ClauseLast)
+                {
+                    if (state.Shift)
+                    {
+                        CompositionConversion.Resize(converting, env, atok == ClauseFirst ? -1 : 1);
+                        return;
+                    }
+                    CompositionConversion.SplitWholeSentence(converting.Conversion);
+                    converting.Conversion.Selected = atok == ClauseFirst ? 0 : converting.Conversion.Clauses.Count - 1;
+                    return;
+                }
+                if (converting is not null && atok is CandidatePrevious or CandidateNext)
+                {
+                    if (vk == VirtualKeys.Space && !converting.Conversion.SelectedClause.Expanded)
+                        CompositionConversion.Expand(env, converting.Conversion.SelectedClause);
+                    else CompositionConversion.NextCandidate(converting.Conversion, env, atok == CandidateNext ? 1 : -1);
+                    return;
+                }
+                vk = atok;
             }
             // 設定「Control キーの割り当て」が macOS 風: 組み込みの Ctrl+U/I/O/P/H より先に見る (issue #643)
             else if (env.Settings.ControlKeys == Config.ControlKeyLayout.Mac && MacControlShortcut(vk) is { } mac)
@@ -124,7 +140,7 @@ internal static class CompositionKeys
                 }
                 vk = mac;
             }
-            else if (ControlShortcut(vk) is { } function)
+            else if (env.Settings.ControlKeys != ControlKeyLayout.Atok && ControlShortcut(vk) is { } function)
             {
                 // Ctrl+U/I/O/P: F6/F7/F10/F9 と同じ (ATOK と同じ割り当て。続けて押すと大文字・小文字も切り替わる)。Ctrl+H は BackSpace。
                 vk = function;
@@ -259,6 +275,9 @@ internal static class CompositionKeys
                 // 予測の候補を選んでいる間の Delete: その語句を学習から消す (issue #349)
                 phrases.Forget(prediction.Text);
                 input.Predictions = null;
+                return;
+            case VirtualKeys.Escape when env.Settings.ControlKeys == ControlKeyLayout.Atok:
+                CompositionLifecycle.Finish(state);
                 return;
             case VirtualKeys.Escape when input.Predictions is { Index: >= 0 } selecting:
                 // 予測の候補を選んでいたら、選ぶのをやめるだけ (打った内容は残す)。
@@ -534,6 +553,35 @@ internal static class CompositionKeys
     {
         var (input, conversion) = (scene.Input, scene.Conversion);
         var shift = state.Shift;
+        var atok = env.Settings.ControlKeys == ControlKeyLayout.Atok;
+        // ATOK の Esc は全入力取消、Backspace は変換取消。左右の素押しで文節幅を変更する。
+        if (atok)
+        {
+            switch (vk)
+            {
+                case VirtualKeys.Escape:
+                    CompositionLifecycle.Finish(state);
+                    return true;
+                case VirtualKeys.Left or VirtualKeys.Right:
+                    if (shift && !state.Control)
+                    {
+                        CompositionConversion.SplitWholeSentence(conversion);
+                        conversion.Selected = Math.Clamp(conversion.Selected + (vk == VirtualKeys.Right ? 1 : -1), 0, conversion.Clauses.Count - 1);
+                    }
+                    else CompositionConversion.Resize(scene, env, vk == VirtualKeys.Right ? 1 : -1);
+                    return true;
+                case VirtualKeys.Down when !shift:
+                    if (conversion.Selected < conversion.Clauses.Count - 1) CommitUpToSelectedClause(state, scene, env);
+                    else CompositionCommit.Commit(state, scene, env);
+                    return true;
+                case VirtualKeys.Tab:
+                    CompositionConversion.NextCandidatePage(conversion, env, shift ? -1 : +1);
+                    return true;
+                case VirtualKeys.Space when shift:
+                    CompositionConversion.NextCandidate(conversion, env, +1);
+                    return true;
+            }
+        }
         switch (vk)
         {
             case VirtualKeys.Space when shift:
@@ -576,7 +624,7 @@ internal static class CompositionKeys
                 CompositionCommit.Commit(state, scene, env);
                 return true;
             case VirtualKeys.F6 or VirtualKeys.F7 or VirtualKeys.F8 or VirtualKeys.F9 or VirtualKeys.F10
-                when env.Settings.FunctionKeysAffectSelectedClause && conversion.Clauses.Count > 1:
+                when (atok || env.Settings.FunctionKeysAffectSelectedClause) && conversion.Clauses.Count > 1:
                 ApplyFunctionKeyToClause(conversion.SelectedClause, vk);
                 return true;
             case VirtualKeys.Tab when CompositionSpelling.FindMisspelling(input, env) is { } typo:
@@ -800,6 +848,34 @@ internal static class CompositionKeys
     private static bool IsControl(int vk) => vk is VirtualKeys.Control or VirtualKeys.LControl or VirtualKeys.RControl;
 
     private const int ResizeExtend = 0x7FFF0001, ResizeShrink = 0x7FFF0002;
+    private const int ClauseFirst = 0x7FFF0003, ClauseLast = 0x7FFF0004, CandidatePrevious = 0x7FFF0005, CandidateNext = 0x7FFF0006;
+
+    private static readonly int[] AtokControlKeys = ['U', 'I', 'O', 'P', 0xC0, 'H', 'M', VirtualKeys.Oem4,
+        'N', 'K', 'L', 'J', VirtualKeys.Left, VirtualKeys.Right, VirtualKeys.Up, VirtualKeys.Down, VirtualKeys.Space, VirtualKeys.Return];
+
+    // ATOK 標準の Control キー。@ と [ は JIS の Windows 仮想キー。
+    private static int? AtokControlShortcut(int vk, bool converting) => vk switch
+    {
+        'U' => VirtualKeys.F6,
+        'I' => VirtualKeys.F7,
+        'O' => VirtualKeys.F8,
+        'P' => VirtualKeys.F9,
+        0xC0 => VirtualKeys.F10,
+        'H' => VirtualKeys.Back,
+        'M' => VirtualKeys.Return,
+        VirtualKeys.Oem4 => VirtualKeys.Escape,
+        'N' when converting => VirtualKeys.Down,
+        'K' when converting => VirtualKeys.Left,
+        'L' when converting => VirtualKeys.Right,
+        'J' when converting => VirtualKeys.Tab,
+        VirtualKeys.Left when converting => ClauseFirst,
+        VirtualKeys.Right when converting => ClauseLast,
+        VirtualKeys.Up when converting => CandidatePrevious,
+        VirtualKeys.Down when converting => CandidateNext,
+        VirtualKeys.Space when converting => CandidateNext,
+        VirtualKeys.Return => VirtualKeys.Return,
+        _ => null,
+    };
 
     /// <summary>
     /// 設定「Control キーの割り当て」が macOS 風のときの割り当て。J K L = ひらがな / カタカナ / 全角英字、H D = 1 文字消す、
@@ -839,11 +915,17 @@ internal static class CompositionKeys
     {
         if (state.Scene is not CompositionScene.WithInput) return [];
         var keys = new HashSet<int>();
-        if (CompositionLifecycle.IsConverting(state) && env.Settings.ControlKeys == Config.ControlKeyLayout.Atok) keys.UnionWith(['K', 'L']);
+
         if (!string.IsNullOrWhiteSpace(env.Settings.ControlKeyBindings)) keys.UnionWith(ControlKeyBindingParser.Parse(env.Settings.ControlKeyBindings).Keys);
-        for (var vk = 'A'; vk <= 'Z'; vk++)
+        if (env.Settings.ControlKeys == ControlKeyLayout.Atok)
         {
-            if ((env.Settings.ControlKeys == Config.ControlKeyLayout.Mac ? MacControlShortcut(vk) : null) is not null || ControlShortcut(vk) is not null) keys.Add(vk);
+            foreach (var vk in AtokControlKeys)
+                if (AtokControlShortcut(vk, CompositionLifecycle.IsConverting(state)) is not null) keys.Add(vk);
+        }
+        else
+        {
+            for (var vk = 'A'; vk <= 'Z'; vk++)
+                if ((env.Settings.ControlKeys == ControlKeyLayout.Mac ? MacControlShortcut(vk) : null) is not null || ControlShortcut(vk) is not null) keys.Add(vk);
         }
         return [.. keys.Order()];
     }

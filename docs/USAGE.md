@@ -18,14 +18,17 @@ kyouhagoogledekensaku  →  今日はgoogleで検索
 
 | したいこと | キー |
 | --- | --- |
-| 変換中に次の候補 / 前の候補 | <kbd>Space</kbd> / <kbd>Shift</kbd> + <kbd>Space</kbd> |
+| 変換中に次の候補 / 前の候補 | <kbd>Space</kbd> または <kbd>Shift</kbd> + <kbd>Space</kbd> / <kbd>↑</kbd> |
 | 予測変換 | <kbd>Tab</kbd> |
-| 変換する文節を選ぶ | <kbd>←</kbd> <kbd>→</kbd> |
-| 文節の区切りを変える | <kbd>Shift</kbd> + <kbd>←</kbd> <kbd>→</kbd> |
-| ひらがな / カタカナ / 半角英字にする | <kbd>F6</kbd> / <kbd>F7</kbd> / <kbd>F10</kbd> |
-| 取り消す | <kbd>Esc</kbd> |
+| 注目文節を移動 | <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd> |
+| 文節幅を変更 | <kbd>←</kbd> / <kbd>→</kbd>、<kbd>Ctrl</kbd> + <kbd>K</kbd> / <kbd>L</kbd> |
+| 先頭・末尾の文節へ | <kbd>Ctrl</kbd> + <kbd>←</kbd> / <kbd>→</kbd> |
+| 部分確定 / 全文確定 | <kbd>↓</kbd> または <kbd>Ctrl</kbd> + <kbd>N</kbd> / <kbd>Enter</kbd> または <kbd>Ctrl</kbd> + <kbd>M</kbd> |
+| 候補ページ送り | <kbd>Tab</kbd> / <kbd>Shift</kbd> + <kbd>Tab</kbd> |
+| ひらがな・全角カナ・半角カナ・全角英数・半角英数 | <kbd>F6</kbd>〜<kbd>F10</kbd>、<kbd>Ctrl</kbd> + <kbd>U</kbd>/<kbd>I</kbd>/<kbd>O</kbd>/<kbd>P</kbd>/<kbd>@</kbd> |
+| 変換取消 / 全入力取消 | <kbd>Backspace</kbd> または <kbd>Ctrl</kbd> + <kbd>H</kbd> / <kbd>Esc</kbd> または <kbd>Ctrl</kbd> + <kbd>[</kbd> |
 
-ローマ字の綴りは Microsoft IME と同じです。
+このフォークの既定は ATOK 風です。Meltype の日英自動判定は維持しています。既存の設定では「Control キーの割り当て」を ATOK 風に変更してください。ローマ字の綴りは Microsoft IME と同じです。
 
 <br>
 
@@ -68,8 +71,10 @@ kyouhagoogledekensaku  →  今日はgoogleで検索
 | キー | 切り替え |
 | --- | --- |
 | <kbd>半角/全角</kbd> / <kbd>Alt</kbd> + <kbd>&#96;</kbd> | 日本語入力 ⇔ 英数 |
-| <kbd>英数</kbd> / <kbd>無変換</kbd> | 英数 |
-| <kbd>かな</kbd> / <kbd>変換</kbd> | 日本語入力 |
+| <kbd>英数</kbd> | 英数 |
+| <kbd>無変換</kbd> / <kbd>F10</kbd>（未入力時） | 日本語入力 ⇔ 英数 |
+| <kbd>かな</kbd> | 日本語入力 |
+| <kbd>変換</kbd>（未入力・選択なし） | 日本語入力 ⇔ 英数 |
 
 設定「左 Alt で英数 / 右 Alt で日本語」を ON にすると、左右の <kbd>Alt</kbd> だけを押して切り替えられます (Windows・Linux)。
 

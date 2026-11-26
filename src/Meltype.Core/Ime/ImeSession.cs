@@ -375,6 +375,10 @@ internal static class ImeSession
         if (IsLockKey(vk)) return PassThrough(state, env);
         if (vk == ToggleShortcut.Hankaku && !key.Ctrl && !key.Alt && !composing) return Consumed;
         if (vk == VirtualKeys.OemAttn && plain) return Switch(state, env, false, before, toggle: false);
+        if (!composing && plain && settings.ControlKeys == ControlKeyLayout.Atok &&
+            (vk is VirtualKeys.NonConvert or VirtualKeys.F10 || vk == VirtualKeys.Convert && field?.Selection is not { Length: > 0 }) &&
+            !IsThumbKey(state, vk, settings))
+            return key.Repeat ? Consumed : Switch(state, env, !ShowsJapanese(state, before), before, toggle: true);
         if (vk is VirtualKeys.Kana or VirtualKeys.Convert or VirtualKeys.NonConvert && plain)
         {
             if (HandleRoleKey(state, env, vk) is { } role) return role;
@@ -541,6 +545,7 @@ internal static class ImeSession
             keys.Add(new ImeShortcut(VirtualKeys.Space, (int)ShortcutModifiers.Shift));
             if (settings.SpaceWidth == SpaceWidth.FullWidth) keys.Add(new ImeShortcut(VirtualKeys.Space, 0));
         }
+        if (settings.ControlKeys == ControlKeyLayout.Atok) keys.Add(new ImeShortcut(VirtualKeys.F10, 0));
         keys.AddRange(snippetKeys.Select(key => new ImeShortcut(key, 0)));
         return new ImeCapture
         {

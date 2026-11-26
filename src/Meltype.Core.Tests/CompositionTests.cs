@@ -305,6 +305,7 @@ internal static class CompositionTests
             detector ??= Detector;
             Settings = new Meltype.Config.Settings
             {
+                ControlKeys = Meltype.Config.ControlKeyLayout.Standard,
                 Mode = Meltype.Config.InputMode.Keyboard,
                 LiveConversion = live,
                 TypedKeys = typedKeys,
@@ -2744,7 +2745,6 @@ internal static class CompositionTests
     {
         var k = new Keyboard { ControlKeys = Meltype.Config.ControlKeyLayout.Atok };
         k.Type("tanniwotoru ");
-        k.Press(VirtualKeys.Left);
         Assert.Equal("単位を取る", string.Concat(k.Host.View!.Clauses!));
         k.Key(VirtualKeys.LControl);
         k.Key('K');
@@ -2752,6 +2752,63 @@ internal static class CompositionTests
         k.Key(VirtualKeys.LControl, up: true);
         var shrunk = string.Concat(k.Host.View!.Clauses!);
         Assert.True(k.Host.View!.Converting && shrunk != "単位を取る", "Ctrl+K で文節が縮む: " + shrunk);
+    }
+
+    [Test]
+    public static void Atok_DefaultAndPostConversionKeys()
+    {
+        Assert.Equal(ControlKeyLayout.Atok, new Settings().ControlKeys, "個人版の既定は ATOK");
+        foreach (var (vk, expected) in new[] { ('U', "かな"), ('I', "カナ"), ('O', "ｶﾅ"), ('P', "ｋａｎａ"), ('@', "kana") })
+        {
+            var k = new Keyboard { ControlKeys = ControlKeyLayout.Atok };
+            k.Type("kana");
+            k.Key(VirtualKeys.LControl);
+            k.Press(vk == '@' ? 0xC0 : vk);
+            k.Key(VirtualKeys.LControl, up: true);
+            Assert.Equal(expected, k.Showing);
+            k.Key(VirtualKeys.LControl);
+            k.Press('M');
+            k.Key(VirtualKeys.LControl, up: true);
+            Assert.Equal(expected, k.Host.Document, "Ctrl+M で確定");
+        }
+    }
+
+    [Test]
+    public static void Atok_ClauseNavigationAndPartialCommit()
+    {
+        var k = new Keyboard { ControlKeys = ControlKeyLayout.Atok };
+        k.Type("tanniwotoru ");
+        k.Key(VirtualKeys.LShift);
+        k.Press(VirtualKeys.Right);
+        k.Press(VirtualKeys.Left);
+        k.Key(VirtualKeys.LShift, up: true);
+        Assert.Equal("単位を取る", string.Concat(k.Host.View!.Clauses!));
+        k.Press(VirtualKeys.Down);
+        Assert.Equal("単位を", k.Host.Document, "下で部分確定");
+        Assert.Equal("とる", k.Showing);
+        k.Press(VirtualKeys.Space);
+        k.Press(VirtualKeys.Back);
+        Assert.Equal("とる", k.Showing, "Backspace で読みへ");
+        k.Press(VirtualKeys.Space);
+        k.Key(VirtualKeys.LControl);
+        k.Press(VirtualKeys.Oem4);
+        k.Key(VirtualKeys.LControl, up: true);
+        Assert.True(k.Host.View is null, "Ctrl+[ で全入力取消");
+        Assert.Equal("単位を", k.Host.Document);
+    }
+
+    [Test]
+    public static void Atok_ModeToggle()
+    {
+        var k = new Keyboard { ControlKeys = ControlKeyLayout.Atok };
+        k.Direct = false;
+        Assert.True(!k.Direct, "初期は日本語");
+        k.Press(VirtualKeys.NonConvert);
+        Assert.True(k.Direct, "無変換で英数");
+        k.Press(VirtualKeys.Convert);
+        Assert.True(!k.Direct, "変換で日本語");
+        k.Press(VirtualKeys.F10);
+        Assert.True(k.Direct, "F10で英数");
     }
 
     [Test]

@@ -120,7 +120,7 @@ internal static class ProtectionTests
             Languages = languages,
         };
         // 行頭の @・/ (#193 の「そのままアプリへ渡す」) を切り、変換ボックスの中の保護区間の扱いを確かめる。
-        return new TestSession(() => new Settings { SigilWordsDirect = false, SpaceAroundEnglish = spaceAroundEnglish }, services: services);
+        return new TestSession(() => new Settings { ControlKeys = ControlKeyLayout.Standard, SigilWordsDirect = false, SpaceAroundEnglish = spaceAroundEnglish }, services: services);
     }
 
     private static SessionResult TypeOne(TestSession session, char c)

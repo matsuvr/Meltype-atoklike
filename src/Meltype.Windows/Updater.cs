@@ -16,7 +16,7 @@ internal sealed class Updater : IDisposable
     /// <summary>最初の確認は起動の 2 分後、その後は 6 時間ごと。</summary>
     private static readonly TimeSpan FirstCheck = TimeSpan.FromMinutes(2), Interval = TimeSpan.FromHours(6);
 
-    private static string Directory => Path.Combine(Config.AppPaths.DataDirectory, "update");
+    private static string Directory => Path.Combine(Config.AppPaths.DataDirectory, "update-atoklike");
     private static string ReadyFile => Path.Combine(Directory, "ready.txt");
     private static string ApplyingFile => Path.Combine(Directory, "applying.txt");
     internal static string InstallLog => Path.Combine(Directory, "install.log");

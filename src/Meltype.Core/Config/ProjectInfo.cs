@@ -9,7 +9,7 @@ namespace Meltype.Config;
 /// <summary>Windows 版・Mac 版・Linux 版で共通の、プロジェクトの情報と不具合報告の URL。</summary>
 public static class ProjectInfo
 {
-    public const string SourceUrl = "https://github.com/yksr-melt/Meltype";
+    public const string SourceUrl = "https://github.com/matsuvr/Meltype-atoklike";
 
     /// <summary>Meltype.Core の版 (Mac 版・Linux 版の版)。</summary>
     public static string CoreVersion =>

@@ -80,7 +80,7 @@ _lib.meltype_set_conversion_ready(_conversion_ready)
 
 def _report_url():
     """不具合報告を開く URL (OS・版・実行環境を入れたもの)。"""
-    return _take(_lib.meltype_report_url(b"Linux")) or "https://github.com/yksr-melt/Meltype/issues/new/choose"
+    return _take(_lib.meltype_report_url(b"Linux")) or "https://github.com/matsuvr/Meltype-atoklike/issues/new/choose"
 
 
 # ---- キー: 文字の無いキー (keyval) → 本体が使う Windows の仮想キーコード。文字を入力するキーは文字だけを渡す ----
@@ -563,7 +563,7 @@ def main():
         bus.request_name("org.freedesktop.IBus.Meltype", 0)
     else:
         # 手で起動したとき (試すとき): コンポーネントを登録する
-        component = IBus.Component.new("org.freedesktop.IBus.Meltype", "Meltype", "1.2.2-pre.2", "GPL-3.0-or-later", "Yukishiro", "https://github.com/yksr-melt/Meltype", "", "")
+        component = IBus.Component.new("org.freedesktop.IBus.Meltype", "Meltype", "1.2.2-pre.2", "GPL-3.0-or-later", "Yukishiro", "https://github.com/matsuvr/Meltype-atoklike", "", "")
         component.add_engine(IBus.EngineDesc.new("meltype", "Meltype", "Meltype", "ja", "GPL-3.0-or-later", "Yukishiro", "", "default"))
         bus.register_component(component)
     _lib.meltype_start_key_count()

@@ -45,7 +45,7 @@ internal static class ImeContractTests
         public Func<string, bool, Settings, Verdict>? ClassifyDirect { get; init; }
 
         // 入力モードの表示の既定は OS と入力方式で違うので、どの OS でも同じに決めておく
-        public Settings Settings { get; set; } = new() { LiveConversion = false, ModeIndicator = ModeIndicatorTiming.OnSwitchAndFocus };
+        public Settings Settings { get; set; } = new() { ControlKeys = ControlKeyLayout.Standard, LiveConversion = false, ModeIndicator = ModeIndicatorTiming.OnSwitchAndFocus };
 
         /// <summary>このフロントが Windows のどちらの入力方式か (null なら入力方式が 1 つしかない OS)。</summary>
         public InputMode? InputMethod { get; set; }

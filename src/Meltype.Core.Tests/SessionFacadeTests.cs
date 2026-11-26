@@ -15,7 +15,7 @@ namespace Meltype.Tests;
 /// <summary>Mac 版・Linux 版のように、キーを 1 つずつ <see cref="Ime.ImeHost"/> に渡し、使ったかをその場で受け取るテスト。</summary>
 internal static class SessionFacadeTests
 {
-    private static TestSession Create() => new(() => new Settings { LiveConversion = false });
+    private static TestSession Create() => new(() => new Settings { ControlKeys = ControlKeyLayout.Standard, LiveConversion = false });
 
     /// <summary>文字を 1 つずつ打つ (英字は大文字なら Shift 付き)。</summary>
     internal static List<SessionResult> Type(TestSession session, string text, string? before = null)

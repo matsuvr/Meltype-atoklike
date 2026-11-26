@@ -24,7 +24,7 @@ internal static class BackgroundConversionTests
         },
         _ => []);
 
-    private static TestSession Session(IKanjiConverter converter) => new(() => new Settings { LiveConversion = true }, converter, lateResults: true);
+    private static TestSession Session(IKanjiConverter converter) => new(() => new Settings { ControlKeys = ControlKeyLayout.Standard, LiveConversion = true }, converter, lateResults: true);
 
     [Test]
     public static void Signal_DoesNotLoseANotificationBeforeWaiting()
@@ -144,7 +144,7 @@ internal static class BackgroundConversionTests
             _ => []);
         var phrases = new PhraseHistory(null);
         phrases.Remember("とることができる", "取ることができる");
-        var session = new TestSession(() => new Settings { LiveConversion = true, PredictiveCandidates = true }, converter,
+        var session = new TestSession(() => new Settings { ControlKeys = ControlKeyLayout.Standard, LiveConversion = true, PredictiveCandidates = true }, converter,
             new CompositionServices { Predictor = new Predictor(phrases, null, null) }, lateResults: true);
         Assert.Equal(0, SessionFacadeTests.Type(session, "tanniwotoru")[^1].View?.Predictions?.Count ?? 0);
 
@@ -378,7 +378,7 @@ internal static class BackgroundConversionTests
     public static void Refresh_SelectsTheLastClauseWhenTheSettingIsOn()
     {
         var converter = new ChangingAnswer { Clauses = [new("にほんごを", "日本語を"), new("かく", "書く")] };
-        var session = new TestSession(() => new Settings { LiveConversion = true, ConversionStartsAtLastClause = true }, converter);
+        var session = new TestSession(() => new Settings { ControlKeys = ControlKeyLayout.Standard, LiveConversion = true, ConversionStartsAtLastClause = true }, converter);
         SessionFacadeTests.Type(session, "nihongowokaku");
         var opened = session.HandleKey(VirtualKeys.Space, null, false, false, false, false).View;
         Assert.Equal(1, opened?.SelectedClause, "最後の文節を選ぶ");
@@ -435,7 +435,7 @@ internal static class BackgroundConversionTests
     {
         // --repro・--self-test: 結果を受け取る経路が無いので、打鍵ごとに答えを待つ
         using var converter = Slow(delayMs: 50);
-        var session = new TestSession(() => new Settings { LiveConversion = true }, converter);
+        var session = new TestSession(() => new Settings { ControlKeys = ControlKeyLayout.Standard, LiveConversion = true }, converter);
         Assert.Equal("日本語", SessionFacadeTests.Type(session, "nihongo")[^1].View?.Text);
     }
 

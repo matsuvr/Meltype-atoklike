@@ -23,7 +23,7 @@ internal static class AppInfo
         Config.ProjectInfo.MisdetectionReportUrl(correction, "Windows", Version, environment);
 
     /// <summary>自動更新で最新のリリースを見に行く GitHub のリポジトリ (公開されている必要がある)。</summary>
-    public const string UpdateRepository = "yksr-melt/Meltype";
+    public const string UpdateRepository = "matsuvr/Meltype-atoklike";
     public const string Contact = "ibutya0319@gmail.com";
 
     public static string Version =>

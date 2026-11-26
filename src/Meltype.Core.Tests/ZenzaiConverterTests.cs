@@ -251,7 +251,7 @@ internal static class ZenzaiConverterTests
         using var server = new FakeServer { Answer = p => ReadingIn(p) == "についてはなす" ? "について話す</s>" : ReadingIn(p) };
         using var zenzai = new ZenzaiConverter(server.Endpoint, timeoutMs: 5000);
         using var mozc = MozcConverterTests.Fake();
-        var session = new TestSession(() => new Settings { LiveConversion = true }, new HybridConverter(mozc, () => zenzai));
+        var session = new TestSession(() => new Settings { ControlKeys = ControlKeyLayout.Standard, LiveConversion = true }, new HybridConverter(mozc, () => zenzai));
         SessionFacadeTests.Type(session, "githubnitsuitehanasu", before: "昨日は");
         SpinWait.SpinUntil(() => server.Prompts.Any(p => ReadingIn(p) == "についてはなす"), 5000);
         var asked = server.Prompts.Where(p => ReadingIn(p) == "についてはなす").ToList();
@@ -286,7 +286,7 @@ internal static class ZenzaiConverterTests
         var zenzai = new ZenzaiConverter(server.Endpoint);
         var mozc = new MozcConverter(new MozcHelperProcess(Environment.ProcessPath!, Path.Combine(Path.GetTempPath(), MozcConverterTests.FakeHelperProfile)));
         var hybrid = new HybridConverter(mozc, () => zenzai);
-        var session = new TestSession(() => new Settings { LiveConversion = true }, hybrid, lateResults: true);
+        var session = new TestSession(() => new Settings { ControlKeys = ControlKeyLayout.Standard, LiveConversion = true }, hybrid, lateResults: true);
         // Mozc の起動を待つ
         mozc.ConvertClauses("あ", null, deadline: Environment.TickCount64 + 10000);
         return (session, mozc, zenzai, server, release);

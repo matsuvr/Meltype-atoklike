@@ -121,8 +121,8 @@ public enum ControlKeyLayout
 {
     /// <summary>Ctrl + U/I/O/P で F6/F7/F10/F9、Ctrl + H で BackSpace。</summary>
     [Description("標準 (Ctrl + U/I/O/P で F6/F7/F10/F9)")] Standard,
-    /// <summary>標準に加えて、変換中の Ctrl + K / L で文節を縮める / 伸ばす。</summary>
-    [Description("ATOK 風 (標準 + Ctrl + K / L で文節の長さ)")] Atok,
+    /// <summary>ATOK の変換・文節・確定キーの割り当て。</summary>
+    [Description("ATOK 風 (文節・候補・確定操作)")] Atok,
     /// <summary>macOS 標準の日本語入力と同じ。</summary>
     [Description("macOS 風")] Mac,
 }
@@ -344,8 +344,8 @@ public sealed class Settings
     public bool ConversionStartsAtLastClause { get; set; }
 
     [Category("8. キー操作"), DisplayName("Control キーの割り当て"),
-     Description("入力中の Control + 英字の割り当てです。標準: Ctrl + U / I / O / P で F6 / F7 / F10 / F9、Ctrl + H で BackSpace。ATOK 風: 標準に加えて、変換中の Ctrl + K で選んでいる文節を縮め、Ctrl + L で伸ばします (Shift + ← → と同じ)。macOS 風: Control + J / K / L をひらがな / カタカナ / 全角英字 (F6 / F7 / F9) に、Control + H / D を前 / 後ろの 1 文字を消す、N / P を次 / 前の候補、B / F / A / E をカーソル移動、O / I を変換中の文節を伸ばす / 縮める、にします (macOS 標準の日本語入力と同じ)。")]
-    public ControlKeyLayout ControlKeys { get; set; } = ControlKeyLayout.Standard;
+     Description("入力中の Control + 英字の割り当てです。標準: Ctrl + U / I / O / P で F6 / F7 / F10 / F9、Ctrl + H で BackSpace。ATOK 風: 左右で文節幅、Shift + 左右で文節移動、下で部分確定。Ctrl + U / I / O / P / @ は F6〜F10、Ctrl + M は確定、Ctrl + [ は取消。macOS 風: Control + J / K / L をひらがな / カタカナ / 全角英字 (F6 / F7 / F9) に、Control + H / D を前 / 後ろの 1 文字を消す、N / P を次 / 前の候補、B / F / A / E をカーソル移動、O / I を変換中の文節を伸ばす / 縮める、にします (macOS 標準の日本語入力と同じ)。")]
+    public ControlKeyLayout ControlKeys { get; set; } = ControlKeyLayout.Atok;
 
     [Category("8. キー操作"), DisplayName("Control キーの個別の割り当て"),
      Description("入力中の Control + 英字に、別のキーの働きを割り当てます。「T=F6;Y=F7;U=F8;I=F9;O=F10」のように、英字=キー名を ; で区切って書きます (F キーが無い HHKB やノートパソコン向け)。キー名: F6〜F10・Left・Right・Up・Down・Home・End・Delete・Back・Enter・Esc・Tab。ここに書いた英字は、「Control キーの割り当て」より優先します。")]
@@ -561,7 +561,7 @@ public sealed class Settings
 
     [Category("13. 更新"), DisplayName("自動で更新する"), Platforms(Platform.Windows),
      Description("新しい版が公開されたら自動でダウンロードし、次に Meltype を起動したとき (Windows にサインインしたとき) に更新します。トレイの「更新して再起動」で今すぐ更新もできます。設定・学習データはそのまま残ります。")]
-    public bool AutoUpdate { get; set; } = true;
+    public bool AutoUpdate { get; set; }
 
     [Category("13. 更新"), DisplayName("プレリリース版も自動で更新する"), Platforms(Platform.Windows),
      Description("ON にすると、正式版の前に公開するプレリリース版 (1.3.1-pre.4 など) も自動更新の対象にします。新しい機能や修正を早く試せますが、不具合や動作の不安定さが含まれることがあります。OFF (標準) では正式版だけを対象にします。")]
